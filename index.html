@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy 18th Birthday, Calvin!</title>
+    <!-- 引入高大上的字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <!-- 引入动画库 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gold: #D4AF37;
+            --dark-bg: #0a111a;
+            --text-white: #f8f9fa;
+            --accent-blue: #1a2a6c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            font-family: 'Lato', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+
+        /* 覆盖层：点击开启仪式感 */
+        #cover {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1c2e4a 0%, #0a111a 100%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.8s;
+        }
+
+        #cover.opened {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .envelope {
+            width: 120px;
+            height: 120px;
+            background: var(--primary-gold);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+            50% { transform: scale(1.1); box-shadow: 0 0 50px rgba(212, 175, 55, 0.7); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+        }
+
+        .open-btn {
+            margin-top: 30px;
+            color: var(--primary-gold);
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+        }
+
+        /* 背景星空效果 */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0e14 0%, #1a2a6c 100%);
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 封面部分 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: var(--primary-gold);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+            letter-spacing: 5px;
+        }
+
+        .hero .subtitle {
+            font-size: 1rem;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            color: #fff;
+        }
+
+        .hero .ornament {
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
+            margin: 20px 0;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        /* 寄语部分卡片式设计 */
+        .section {
+            margin-bottom: 50px;
+            padding: 45px 25px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .english-text {
+            font-size: 1.25rem;
+            font-weight: 400;
+            margin-bottom: 15px;
+            color: #ffffff;
+            line-height: 1.6;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .chinese-text {
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.5);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            padding-top: 15px;
+            font-weight: 300;
+        }
+
+        .highlight-box {
+            background: linear-gradient(45deg, rgba(212, 175, 55, 0.15), rgba(26, 42, 108, 0.3));
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 4px solid var(--primary-gold);
+        }
+
+        .highlight-title {
+            color: var(--primary-gold);
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .highlight-title i {
+            margin-right: 10px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-gold);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 60px 0;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .signature {
+            font-size: 1.8rem;
+            color: var(--primary-gold);
+            margin-top: 25px;
+            font-weight: 700;
+        }
+
+        /* 针对手机的小调整 */
+        @media (max-width: 400px) {
+            .hero h1 { font-size: 2.5rem; }
+            .section { padding: 30px 15px; }
+        }
+
+        /* 按钮动效 */
+        .gift-tag {
+            display: inline-block;
+            padding: 5px 15px;
+            background: linear-gradient(45deg, var(--primary-gold), #fff);
+            background-size: 200% auto;
+            color: var(--dark-bg);
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 仪式感封面 -->
+    <div id="cover" onclick="openCard()">
+        <div class="envelope">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#0a111a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L2 22"/><path d="M2 2l20 20"/><circle cx="12" cy="12" r="10"/></svg>
+        </div>
+        <div class="open-btn">TAP TO OPEN</div>
+        <p style="color: rgba(255,255,255,0.4); margin-top: 10px; font-size: 0.8rem;">给 凯文 的 18 岁生日贺卡</p>
+    </div>
+
+    <div id="particles-js"></div>
+
+    <div class="container">
+        <!-- 封面层 -->
+        <div class="hero">
+            <div data-aos="fade-up" data-aos-duration="2000">
+                <p class="subtitle">Welcome to Adulthood</p>
+                <div class="ornament" style="margin-left: auto; margin-right: auto;"></div>
+                <h1>CALVIN</h1>
+                <div class="ornament" style="margin-left: auto; margin-right: auto;"></div>
+                <p class="subtitle">18TH BIRTHDAY</p>
+            </div>
+            <div class="scroll-indicator">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+            </div>
+        </div>
+
+        <!-- 第一部分：开篇 -->
+        <div class="section" data-aos="fade-up">
+            <div class="english-text">
+                Dear Son, my Calvin, Today you turn 18, an important milestone marking your step into adulthood.
+            </div>
+            <div class="chinese-text">
+                我的儿子，凯文：今天你18岁了，恭喜你进入成年人的世界。
+            </div>
+        </div>
+
+        <!-- 第二部分：寄语 -->
+        <div class="section" data-aos="fade-up">
+            <div class="english-text">
+                Over the past 18 years, we have had the privilege and responsibility of bringing you into this world and supporting you as you grew. We have done our best to provide you with a healthy upbringing and a solid education. From this point on, your life is truly your own.
+            </div>
+            <div class="chinese-text">
+                爸爸妈妈把你带到这个世界，你健康的，快乐的，三观清晰的长到今天，我们作为父母，阶段性任务已经完成。从现在开始，世界在你的脚下。
+            </div>
+        </div>
+
+        <!-- 第三部分：责任与自主 -->
+        <div class="section" data-aos="fade-up">
+            <div class="english-text">
+                You will now make your own choices and take responsibility for them. You will shape your own path and learn from your own experiences. We will always be here for you, but we will step back to give you the space to grow independently.
+            </div>
+            <div class="chinese-text">
+                你将亲自掌舵自己的人生，做出自己的选择，也承担相应的责任。爸爸妈妈会始终站在你身后，为你祝福、支持你，但前进的方向，将由你自己决定。
+            </div>
+        </div>
+
+        <!-- 第四部分：礼物环节 - Saxo Account -->
+        <div class="section" data-aos="zoom-in">
+            <span class="gift-tag">A Special Gift for You</span>
+            <div class="highlight-box">
+                <div class="highlight-title">
+                    Saxo Investment Account
+                </div>
+                <div class="english-text">
+                    To celebrate this transition, we have opened a Saxo investment account for you. This is your first capital as an adult and a practical step toward learning how to manage money, think long-term, and invest responsibly.
+                </div>
+                <div class="chinese-text">
+                    作为你成人的第一份礼物，我们为你开设了一个 Saxo 投资账户。这是你人生的第一桶金，更是一份责任。希望你能在未来的岁月里，学会理性思考、合理投资，懂得耐心、风险与长期规划的意义。
+                </div>
+            </div>
+        </div>
+
+        <!-- 第五部分：期待 -->
+        <div class="section" data-aos="fade-up">
+            <div class="english-text">
+                We are proud of the person you have become and have full confidence in your ability to move forward thoughtfully and independently.
+            </div>
+            <div class="chinese-text">
+                我们为你成长为今天的样子感到骄傲，也相信你会以独立、自信和正直的态度，走好属于自己的人生道路。
+            </div>
+        </div>
+
+        <!-- 结尾 -->
+        <div class="footer" data-aos="zoom-in">
+            <h2 style="margin-bottom:10px;">Happy 18th Birthday!</h2>
+            <h2 style="font-size: 1.5rem;">18岁生日快乐</h2>
+            <div class="signature">
+                With love,<br>
+                Mom & Dad<br>
+                <span style="font-size: 1.2rem; opacity: 0.8;">爱你的爸爸妈妈</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 粒子效果库 -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <!-- 动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    
+    <script>
+        function openCard() {
+            document.getElementById('cover').classList.add('opened');
+            setTimeout(() => {
+                AOS.refresh();
+            }, 1000);
+        }
+
+        // 初始化动画
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        // 背景粒子配置
+        particlesJS('particles-js', {
+            "particles": {
+                "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#D4AF37" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5, "random": true },
+                "size": { "value": 3, "random": true },
+                "line_linked": { "enable": true, "distance": 150, "color": "#D4AF37", "opacity": 0.2, "width": 1 },
+                "move": { "enable": true, "speed": 2, "direction": "none", "random": true, "out_mode": "out" }
+            },
+            "interactivity": {
+                "events": { "onhover": { "enable": true, "mode": "repulse" } }
+            }
+        });
+    </script>
+</body>
+</html>
