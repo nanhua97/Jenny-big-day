@@ -423,9 +423,14 @@
     
     <script>
         function openCard() {
+            // 滚动到页面顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
             document.getElementById('cover').classList.add('opened');
             setTimeout(() => {
                 AOS.refresh();
+                // 确保页面在顶部
+                window.scrollTo(0, 0);
             }, 1000);
         }
 
