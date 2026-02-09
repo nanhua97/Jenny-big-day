@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jenny & Jennecy · 时光之锁</title>
+  <style>
+    :root {
+      --bg-a: #f7efe3;
+      --bg-b: #f8e7ee;
+      --bg-c: #efe7d0;
+      --ink: #392931;
+      --soft: #6f5860;
+      --rose: #d87495;
+      --rose-2: #e9a7bb;
+      --gold: #d7ab55;
+      --gold-2: #f4d27f;
+      --paper: #fffaf3;
+      --card: rgba(255, 250, 242, 0.74);
+      --line: rgba(255, 255, 255, 0.55);
+      --shadow: 0 18px 48px rgba(72, 46, 57, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 10% 16%, rgba(255,255,255,.75), transparent 45%),
+        radial-gradient(circle at 84% 12%, rgba(243, 218, 167, .56), transparent 46%),
+        linear-gradient(135deg, var(--bg-a), var(--bg-b) 52%, var(--bg-c));
+      overflow-x: hidden;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .16;
+      background-image: radial-gradient(rgba(0,0,0,.22) .5px, transparent .5px);
+      background-size: 3px 3px;
+      z-index: 0;
+    }
+
+    .lock-stage {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,.6), rgba(255,255,255,.15) 58%),
+        linear-gradient(140deg, rgba(250, 237, 214, .96), rgba(243, 227, 238, .96));
+      transition: opacity .8s ease, visibility .8s ease;
+    }
+
+    body.unlocked .lock-stage {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .lock-wrap {
+      width: min(560px, 92vw);
+      text-align: center;
+      padding: 28px 20px 24px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(255,255,255,.6);
+      box-shadow: var(--shadow);
+    }
+
+    .lock {
+      width: 132px;
+      height: 132px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      border: 3px solid #cf9e44;
+      background:
+        radial-gradient(circle at 35% 30%, var(--gold-2), var(--gold) 62%, #b98732 100%);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: 0 0 0 0 rgba(215, 171, 85, .52), 0 10px 24px rgba(167, 121, 40, .35);
+      animation: pulse 1.8s ease-in-out infinite;
+      position: relative;
+    }
+
+    .lock::before {
+      content: "";
+      width: 56px;
+      height: 42px;
+      border: 6px solid #8c6221;
+      border-bottom: 0;
+      border-radius: 48px 48px 0 0;
+      position: absolute;
+      top: -31px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: transparent;
+    }
+
+    .lock span {
+      font-weight: 700;
+      color: #664419;
+      letter-spacing: .04em;
+      font-size: .95rem;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(215,171,85,.52), 0 10px 24px rgba(167,121,40,.35); transform: scale(1); }
+      50% { box-shadow: 0 0 0 16px rgba(215,171,85,0), 0 12px 30px rgba(167,121,40,.38); transform: scale(1.04); }
+    }
+
+    .lock-wrap h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 4vw, 2.1rem);
+      color: #5a3c46;
+    }
+
+    .lock-wrap p {
+      margin: 0;
+      line-height: 1.7;
+      color: #7a5f67;
+    }
+
+    .book-doors {
+      position: fixed;
+      inset: 0;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .door {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      background: linear-gradient(180deg, #f6e7cd, #f8dfcf 45%, #e6c5b3);
+      box-shadow: inset 0 0 40px rgba(80, 44, 30, .2);
+      transition: transform 1.1s cubic-bezier(.23,.76,.26,1);
+    }
+
+    .door.left { left: 0; border-right: 1px solid rgba(126, 80, 52, .25); }
+    .door.right { right: 0; border-left: 1px solid rgba(126, 80, 52, .25); }
+
+    body.unlocked .door.left { transform: translateX(-102%); }
+    body.unlocked .door.right { transform: translateX(102%); }
+
+    main {
+      position: relative;
+      z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 18px 60px;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .7s ease .35s, transform .7s ease .35s;
+      pointer-events: none;
+    }
+
+    body.unlocked main {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .headline {
+      margin: 8px 0 18px;
+      text-align: center;
+      color: #5a3a45;
+    }
+
+    .headline h2 {
+      margin: 0;
+      font-size: clamp(1.7rem, 5vw, 3rem);
+      letter-spacing: .02em;
+    }
+
+    .headline p {
+      margin: 8px 0 0;
+      color: #7c5e66;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      padding: clamp(16px, 3vw, 26px);
+      margin-bottom: 16px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      right: -80px;
+      top: -90px;
+      background: radial-gradient(circle, rgba(216, 116, 149, .25), transparent 70%);
+      pointer-events: none;
+    }
+
+    .scene-title {
+      margin: 0 0 10px;
+      font-size: clamp(1.2rem, 3.2vw, 1.7rem);
+      color: #91455f;
+    }
+
+    .scene-sub {
+      margin: 0 0 14px;
+      color: #735963;
+      line-height: 1.72;
+    }
+
+    .scene-one {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .photo-card {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      min-height: 260px;
+      border: 1px solid rgba(255,255,255,.72);
+      background: #f3ebde;
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-tag {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      background: rgba(57, 41, 49, .66);
+      color: #fff;
+      font-size: .82rem;
+      padding: 5px 8px;
+      border-radius: 999px;
+    }
+
+    .bag-card {
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.72);
+      background: linear-gradient(135deg, rgba(255,255,255,.8), rgba(250, 239, 216, .8));
+      display: grid;
+      place-items: center;
+      position: relative;
+      min-height: 260px;
+      overflow: hidden;
+    }
+
+    .bag-media {
+      width: min(78%, 280px);
+      aspect-ratio: 1108 / 1528;
+      height: auto;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #f6f3ee;
+      box-shadow: 0 10px 24px rgba(125, 78, 95, .12);
+      display: grid;
+      place-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .bag-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      display: block;
+      transform: scale(1);
+      transition: transform .25s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .bag-text {
+      margin-top: 16px;
+      font-weight: 700;
+      color: #7f3f57;
+      letter-spacing: .02em;
+    }
+
+    .items {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .item {
+      position: absolute;
+      font-size: 1.2rem;
+      opacity: 0;
+      transform: translateY(8px) scale(.8);
+      transition: transform .38s ease, opacity .38s ease;
+      filter: drop-shadow(0 5px 8px rgba(112, 66, 82, .2));
+    }
+
+    .item:nth-child(1) { left: 16%; top: 18%; }
+    .item:nth-child(2) { right: 20%; top: 20%; }
+    .item:nth-child(3) { left: 20%; bottom: 18%; }
+    .item:nth-child(4) { right: 18%; bottom: 16%; }
+
+    .bag-card:hover .bag-photo { transform: scale(1.06) translateY(-2px); }
+    .bag-card:hover .item { opacity: 1; transform: translateY(0) scale(1); }
+
+    .quote {
+      margin-top: 10px;
+      border-left: 4px solid #d87495;
+      background: rgba(255,255,255,.64);
+      padding: 12px 14px;
+      line-height: 1.82;
+      color: #664a54;
+      border-radius: 10px;
+    }
+
+    .calendar-wrap {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .calendar-card {
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.74);
+      background: linear-gradient(145deg, #fff9f2, #f2e5d7);
+      box-shadow: inset 0 0 0 1px rgba(206, 176, 142, .26);
+      padding: 14px;
+      position: relative;
+      min-height: 260px;
+    }
+
+    .calendar-head {
+      display: flex;
+      justify-content: space-between;
+      color: #845d45;
+      font-weight: 700;
+      letter-spacing: .08em;
+      border-bottom: 1px dashed rgba(131, 93, 70, .4);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .flip {
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid rgba(199, 173, 150, .6);
+      padding: 16px;
+      position: relative;
+      min-height: 175px;
+      overflow: hidden;
+    }
+
+    .flip::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      border-top: 1px dashed rgba(180, 140, 112, .25);
+    }
+
+    .month {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #7d4e32;
+      margin: 0;
+    }
+
+    .day {
+      margin: 8px 0 0;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #b8545e;
+      line-height: 1;
+    }
+
+    .year {
+      margin: 8px 0 0;
+      color: #906349;
+      font-size: .95rem;
+      letter-spacing: .08em;
+    }
+
+    .lock-card {
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.72);
+      background: linear-gradient(145deg, #fff9f2, #f2e5d7);
+      box-shadow: inset 0 0 0 1px rgba(206, 176, 142, .2);
+      padding: 12px;
+      display: grid;
+      place-items: center;
+    }
+
+    .lock-card img {
+      display: block;
+      width: auto;
+      max-width: min(100%, 320px);
+      height: auto;
+      max-height: 420px;
+      border-radius: 12px;
+      border: 1px solid rgba(199, 173, 150, .56);
+      box-shadow: 0 8px 20px rgba(121, 84, 56, .14);
+    }
+
+    .flip-page {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 50%;
+      transform-origin: bottom;
+      background: linear-gradient(#fff, #f4ebe2);
+      animation: flipPage 1.4s ease .5s forwards;
+      border-bottom: 1px solid rgba(205, 179, 156, .55);
+    }
+
+    @keyframes flipPage {
+      0% { transform: rotateX(0deg); }
+      100% { transform: rotateX(-178deg); opacity: 0; }
+    }
+
+    .baby-card {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.72);
+      min-height: 260px;
+    }
+
+    .baby-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .baby-note {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(64, 42, 50, .58);
+      color: #fff;
+      font-size: .84rem;
+      line-height: 1.6;
+    }
+
+    .star-panel {
+      position: relative;
+      min-height: 360px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(255,255,255,.45), transparent 40%),
+        radial-gradient(circle at 90% 20%, rgba(255,255,255,.35), transparent 35%),
+        linear-gradient(160deg, rgba(45,35,52,.92), rgba(75,47,65,.95));
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+
+    .stars {
+      position: absolute;
+      inset: 0;
+    }
+
+    .star {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border: 0;
+      background: transparent;
+      color: #ffd98a;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      padding: 0;
+      text-shadow: 0 0 8px rgba(255, 209, 120, .6);
+      transition: transform .18s ease, color .18s ease;
+    }
+
+    .star:hover { transform: scale(1.28); color: #fff3c8; }
+    .star.active {
+      transform: scale(1.35);
+      color: #fff7cd;
+      text-shadow: 0 0 14px rgba(255, 222, 138, .95);
+    }
+
+    .star-msg {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 16px;
+      min-height: 72px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.28);
+      padding: 12px;
+      color: #fef6ea;
+      line-height: 1.7;
+      backdrop-filter: blur(4px);
+    }
+
+    .star-msg b {
+      color: #ffd68d;
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+
+    .slogan {
+      margin-top: 12px;
+      color: #f7ebda;
+      text-align: center;
+      letter-spacing: .02em;
+      font-size: clamp(.95rem, 2.6vw, 1.2rem);
+    }
+
+    .footer {
+      text-align: center;
+      color: #7a5f67;
+      font-size: .86rem;
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 860px) {
+      .scene-one,
+      .calendar-wrap { grid-template-columns: 1fr; }
+      .star-panel { min-height: 420px; }
+      .bag-media { width: min(82%, 300px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+
+  <section class="lock-stage" id="lockStage">
+    <div class="lock-wrap">
+      <button class="lock" id="unlockBtn" type="button" aria-label="解开平安锁">
+        <span>平安锁</span>
+      </button>
+      <h1>开启“时光之锁”</h1>
+      <p>解开平安锁，开启 Jenny &amp; Jennecy 的幸福新年。</p>
+    </div>
+  </section>
+
+  <div class="book-doors" aria-hidden="true">
+    <div class="door left"></div>
+    <div class="door right"></div>
+  </div>
+
+  <main>
+    <header class="headline">
+      <h2>生日快乐，Jenny Ling</h2>
+      <p>一份写给新手妈妈和小天使 Jennecy 的三幕故事卡</p>
+    </header>
+
+    <section class="panel">
+      <h3 class="scene-title">第一幕：致 88 年的 Jenny</h3>
+      <p class="scene-sub">这一年，你解锁了最高难度的“母职”任务。送你一个 Longchamp，装下优雅，也装下每一个从容瞬间。</p>
+
+      <div class="scene-one">
+        <article class="photo-card">
+          <img src="./jenny-work.jpg" alt="Jenny 工作照" />
+          <div class="photo-tag">Jenny · 工作照</div>
+        </article>
+
+        <article class="bag-card" aria-label="Longchamp 包包彩蛋">
+          <div class="bag-media">
+            <img class="bag-photo" src="./longchamp-bag.jpg" alt="Longchamp 包包" />
+          </div>
+          <div class="bag-text">Longchamp Bag · Hover 有彩蛋</div>
+          <div class="items" aria-hidden="true">
+            <span class="item">💄</span>
+            <span class="item">🍼</span>
+            <span class="item">🧻</span>
+            <span class="item">🧦</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="quote">
+        “致 1988 年降临的女孩 Jenny。<br>
+        这一年你把‘洒脱’升级成‘柔韧’，把‘漂亮’升级成‘有光’。愿你继续优雅，也继续被岁月偏爱。”
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3 class="scene-title">第二幕：给小天使 Jennecy 的倒计时</h3>
+      <p class="scene-sub">1月7日，Jennecy 踩着冬日的尾巴来到你身边。平安锁，锁住健康，锁住快乐。</p>
+
+      <div class="calendar-wrap">
+        <article class="calendar-card">
+          <div class="calendar-head"><span>MEMORY CALENDAR</span><span>NEW LIFE</span></div>
+          <div class="flip">
+            <div class="flip-page" aria-hidden="true"></div>
+            <p class="month">JAN</p>
+            <p class="day">07</p>
+            <p class="year">2026</p>
+          </div>
+        </article>
+
+        <article class="baby-card">
+          <img src="./jennecy-baby.jpg" alt="Jennecy 宝宝照" />
+          <div class="baby-note">愿小公主在 Jenny 妈妈的羽翼下，岁岁平安，眼里永远有光。</div>
+        </article>
+
+        <article class="lock-card">
+          <img src="./gold-lock.jpg" alt="平安小金锁" />
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3 class="scene-title">第三幕：温情“三十六计”</h3>
+      <p class="scene-sub">点击星星，解锁 30+ 后最美时光里的勋章与祝福。</p>
+
+      <div class="star-panel">
+        <div class="stars" id="stars"></div>
+        <div class="star-msg" id="starMsg"><b>点击任意星星</b><br>这里会出现朋友祝福或新手妈妈勋章。</div>
+        <div class="slogan">Jenny, 你是 Jennecy 的全世界，而你是我心中永远的少女。</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    (function () {
+      var unlockBtn = document.getElementById('unlockBtn');
+      var starWrap = document.getElementById('stars');
+      var starMsg = document.getElementById('starMsg');
+      var stars = [];
+      var autoStarTimer = null;
+      var autoStarStopped = false;
+
+      var messages = [
+        '勋章：第一次换尿布成功，动作已经专业。',
+        '祝福：愿你每个夜晚都被温柔接住。',
+        '勋章：第一次哄睡通关，抱娃姿势满分。',
+        '祝福：愿你依旧是那个发光的女孩。',
+        '勋章：第一次熬大夜，第二天还在笑。',
+        '祝福：愿 Jennecy 的每个里程碑都被记录。',
+        '勋章：第一次秒懂哭声，妈妈雷达上线。',
+        '祝福：愿平安小金锁，锁住一生安稳。',
+        '勋章：第一次独立出门遛娃成功。',
+        '祝福：愿你被爱包围，也被自己宠爱。',
+        '勋章：第一次奶瓶消毒流程零失误。',
+        '祝福：你是她最安全的港湾。',
+        '勋章：第一次夜奶后还记得微笑。',
+        '祝福：愿你每个生日都比去年更从容。',
+        '勋章：第一次拍到母女同框神图。',
+        '祝福：愿你和宝宝平安健康，日日顺心。',
+        '勋章：第一次把慌张变成了淡定。',
+        '祝福：Longchamp 装得下你的勇敢与细腻。',
+        '勋章：第一次听见她安静睡着的呼吸。',
+        '祝福：愿你的温柔从不被辜负。',
+        '勋章：第一次把“我不行”改成“我可以”。',
+        '祝福：愿你保有少女心，也拥有大人底气。',
+        '勋章：第一次满月仪式筹备完成。',
+        '祝福：愿 Jennecy 在爱里慢慢长大。',
+        '勋章：第一次婴儿衣物分类整理完成。',
+        '祝福：愿你们一家三口岁岁有暖光。',
+        '勋章：第一次建立自己的带娃节奏。',
+        '祝福：愿你忙而不乱，累而不苦。',
+        '勋章：第一次在疲惫中仍然选择温柔。',
+        '祝福：愿你永远记得，你已经做得很好。',
+        '勋章：第一次同时兼顾工作与育儿。',
+        '祝福：你是 Jennecy 的宇宙中心。',
+        '勋章：第一次听见她安心入睡的小呼噜。',
+        '祝福：愿你的 30+，自由、坚定、漂亮。',
+        '勋章：第一次发现自己比想象中更强。',
+        '终极祝福：生日快乐，Jenny Ling。'
+      ];
+
+      function playChime() {
+        try {
+          var AudioCtx = window.AudioContext || window.webkitAudioContext;
+          var ctx = new AudioCtx();
+          var gain = ctx.createGain();
+          gain.connect(ctx.destination);
+          gain.gain.setValueAtTime(0.001, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.22, ctx.currentTime + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
+
+          var osc1 = ctx.createOscillator();
+          var osc2 = ctx.createOscillator();
+          osc1.type = 'sine';
+          osc2.type = 'triangle';
+          osc1.frequency.setValueAtTime(880, ctx.currentTime);
+          osc2.frequency.setValueAtTime(1320, ctx.currentTime + 0.08);
+          osc1.connect(gain);
+          osc2.connect(gain);
+          osc1.start();
+          osc2.start(ctx.currentTime + 0.08);
+          osc1.stop(ctx.currentTime + 0.28);
+          osc2.stop(ctx.currentTime + 0.55);
+        } catch (e) {
+          // ignore audio errors
+        }
+      }
+
+      unlockBtn.addEventListener('click', function () {
+        playChime();
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        document.body.classList.add('unlocked');
+        startAutoStar();
+      });
+
+      function showStarMessage(text, isAuto) {
+        var title = isAuto ? '流星祝福' : '解锁祝福';
+        starMsg.innerHTML = '<b>' + title + '</b><br>' + text;
+      }
+
+      function lightStar(star, isAuto) {
+        if (!star) return;
+        star.classList.add('active');
+        window.setTimeout(function () {
+          star.classList.remove('active');
+        }, 520);
+        showStarMessage(star.dataset.msg, isAuto);
+      }
+
+      function pickRandomStar() {
+        if (!stars.length) return null;
+        var index = Math.floor(Math.random() * stars.length);
+        return stars[index];
+      }
+
+      function stopAutoStar() {
+        autoStarStopped = true;
+        if (autoStarTimer) {
+          window.clearInterval(autoStarTimer);
+          autoStarTimer = null;
+        }
+      }
+
+      function startAutoStar() {
+        if (autoStarStopped || autoStarTimer || !stars.length) return;
+        lightStar(pickRandomStar(), true);
+        autoStarTimer = window.setInterval(function () {
+          if (autoStarStopped) return;
+          lightStar(pickRandomStar(), true);
+        }, 2200);
+      }
+
+      function buildStars() {
+        var count = 36;
+        function heartPoint(t, scale) {
+          var x = 16 * Math.pow(Math.sin(t), 3);
+          var y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+          return {
+            x: x * scale,
+            y: y * scale
+          };
+        }
+        function toPercent(point) {
+          var centerX = 50;
+          var centerY = 38;
+          var left = centerX + (point.x / 16) * 23;
+          var top = centerY - (point.y / 17) * 18;
+          return {
+            left: Math.max(4, Math.min(96, left)),
+            top: Math.max(8, Math.min(66, top))
+          };
+        }
+        var contourCount = 26;
+        for (var i = 0; i < count; i++) {
+          var btn = document.createElement('button');
+          btn.className = 'star';
+          btn.type = 'button';
+          btn.textContent = '✦';
+          var t;
+          var p;
+          if (i < contourCount) {
+            t = (Math.PI * 2 * i) / contourCount;
+            p = heartPoint(t, 1);
+          } else {
+            t = Math.random() * Math.PI * 2;
+            p = heartPoint(t, 0.25 + Math.random() * 0.55);
+          }
+          var pos = toPercent(p);
+          btn.style.left = pos.left + '%';
+          btn.style.top = pos.top + '%';
+          btn.dataset.msg = messages[i % messages.length];
+          btn.addEventListener('click', function () {
+            stopAutoStar();
+            lightStar(this, false);
+          });
+          starWrap.appendChild(btn);
+          stars.push(btn);
+        }
+      }
+
+      buildStars();
+    })();
+  </script>
+</body>
+</html>
